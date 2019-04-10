@@ -11,26 +11,23 @@ public:
   music(name receiver, name code,  datastream<const char*> ds): contract(receiver, code, ds) {}
 
   [[eosio::action]]
-  void addsong(std::string song_name, std::uint64_t price) {
+  void addsong(std::uint64_t song_id, std::uint64_t price) {
     //require_auth(_self);
-    std::hash<std::string> hasher;
-    song_index songs(get_self(), 100000);
-    const auto hash = hasher(song_name); 
-    auto iterator = songs.find(hasher(song_name));
+    song_index songs(get_self(), 100001); 
+    auto iterator = songs.find(song_id);
     eosio_assert(iterator == songs.end(), "Song already exists");
     songs.emplace(get_self(), [&]( auto& row ) {
-      row.key = hasher(song_name);
-      row.song_name = song_name;
+      row.key = song_id;
+      row.song_id = song_id;
       row.price = price;
     });
   }
 
   [[eosio::action]]
-  void erase(std::string song_name) {
+  void erase(std::uint64_t song_id) {
     //require_auth(_self);
-    song_index songs(get_self(), 100000);
-    std::hash<std::string> hasher;
-    auto iterator = songs.find(hasher(song_name));
+    song_index songs(get_self(), 100001);
+    auto iterator = songs.find(song_id);
     eosio_assert(iterator != songs.end(), "Song doesn't exist");
     songs.erase(iterator);
   }
@@ -41,11 +38,10 @@ public:
     eosio_assert(data.quantity.is_valid(), "Transaction must be valid");
     int totalcost = 0;
     int last = 0;
-    const std::string memo = data.memo;
-    std::hash<std::string> hasher;
-    song_index songs(get_self(), 100000);
+    const std::uint64_t song_id = std::stoi(data.memo.substr(0, data.memo.find(";")));
+    song_index songs(get_self(), 100001);
     auto x = 0;
-    auto iterator = songs.find(hasher(memo));
+    auto iterator = songs.find(song_id);
     eosio_assert(iterator != songs.end(), "Song you attempted to buy doesn't exist!");
     totalcost += iterator->price;
     /*while ((x = memo.string::find(",")) != std::string::npos) {
@@ -56,6 +52,7 @@ public:
       totalcost += itr->price;
     }*/
     eosio_assert(totalcost * 10000 == data.quantity.amount, "Incorrect amount of money sent for transaction");
+    eosio::print("transfer complete");
   }
 
   /*[[eosio::action]]
@@ -68,7 +65,7 @@ public:
 private:
   struct [[eosio::table]] song {
     uint64_t key;
-    std::string song_name;
+    uint64_t song_id;
     uint64_t price; 
     uint64_t primary_key() const { return key; }
   };
