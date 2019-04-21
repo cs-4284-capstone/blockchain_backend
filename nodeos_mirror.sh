@@ -16,4 +16,4 @@ nodeos \
     --plugin eosio::http_plugin \
     --http-server-address=127.0.0.1:$HTTP_PORT \
     --config-dir node2 \
-    --data-dir node2
+    --data-dir node2 >> /dev/null 2>&1

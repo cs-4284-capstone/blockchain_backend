@@ -6,6 +6,8 @@ set -x
 
 cd /contracts
 
+if [ -f "${WALLET}_wallet.txt" ]; then exit; fi
+
 cleos wallet create -n ${WALLET} -f ${WALLET}_wallet.txt
 cleos wallet open -n ${WALLET}
 cat ${WALLET}_wallet.txt | cleos wallet unlock -n ${WALLET}

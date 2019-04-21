@@ -12,4 +12,4 @@ nodeos -e -p eosio \
     --plugin eosio::history_api_plugin \
     --access-control-allow-origin='*' \
     --contracts-console \
-    --http-validate-host=false
+    --http-validate-host=false >> /dev/null 2>&1
