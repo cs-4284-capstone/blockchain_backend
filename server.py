@@ -10,12 +10,12 @@ class WalletContext:
 
     def __enter__(self):
         print("Unlocking wallet...")
-        subprocess.run(["sh", "-c", f"cat {self.pass_file} | cleos wallet unlock -n {self.wallet}"], check=True)
+        subprocess.run(["sh", "-c", f"cat {self.pass_file} | cleos wallet unlock -n {self.wallet}"])
         return True
 
     def __exit__(self, type, value, traceback):
         print("Locking wallet...")
-        subprocess.run(["sh", "-c", f"cleos wallet lock -n {self.wallet}"], check=True)
+        subprocess.run(["sh", "-c", f"cleos wallet lock -n {self.wallet}"])
 
 
 @app.route("/")
