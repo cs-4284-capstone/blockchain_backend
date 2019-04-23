@@ -11,7 +11,7 @@ public:
   music(name receiver, name code,  datastream<const char*> ds): contract(receiver, code, ds) {}
 
   [[eosio::action]]
-  void addsong(std::uint64_t song_id, std::uint64_t price) {
+  void addsong(std::uint64_t song_id, float price) {
     //require_auth(_self);
     song_index songs(get_self(), 100001); 
     auto iterator = songs.find(song_id);
@@ -36,7 +36,7 @@ public:
   void transfer(uint64_t sender, uint64_t receiver) {
     auto data = unpack_action_data<types::st_transfer>();
     eosio_assert(data.quantity.is_valid(), "Transaction must be valid");
-    int totalcost = 0;
+    float totalcost = 0;
     int last = 0;
     const std::uint64_t song_id = std::stoi(data.memo.substr(0, data.memo.find(";")));
     song_index songs(get_self(), 100001);
@@ -51,6 +51,8 @@ public:
       //query for price
       totalcost += itr->price;
     }*/
+    eosio::print(totalcost);
+    eosio::print(data.quantity.amount);
     eosio_assert(totalcost * 10000 == data.quantity.amount, "Incorrect amount of money sent for transaction");
     eosio::print("transfer complete");
   }
@@ -66,7 +68,7 @@ private:
   struct [[eosio::table]] song {
     uint64_t key;
     uint64_t song_id;
-    uint64_t price; 
+    float price; 
     uint64_t primary_key() const { return key; }
   };
   typedef eosio::multi_index<"songs"_n, song> song_index;
